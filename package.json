@@ -1,6 +1,6 @@
 {
   "name": "react-rc",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "React high-order component for configuration",
   "main": "commonjs",
   "module": "es",
