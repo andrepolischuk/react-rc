@@ -1,6 +1,7 @@
 import {Component, Children} from 'react'
 import {object, element} from 'prop-types'
-import channel from './channel'
+import createChannel from 'brcast'
+import channelKey from './channel-key'
 
 export default class ConfigProvider extends Component {
   static propTypes = {
@@ -9,24 +10,56 @@ export default class ConfigProvider extends Component {
   }
 
   static contextTypes = {
-    [channel]: object
+    [channelKey]: object
   }
 
   static childContextTypes = {
-    [channel]: object
+    [channelKey]: object
+  }
+
+  channel = createChannel(this.getConfig())
+
+  get updateChannel () {
+    return this.context[channelKey]
   }
 
   getChildContext () {
     return {
-      [channel]: this.getConfig()
+      [channelKey]: this.channel
     }
   }
 
-  getConfig () {
-    return {
-      ...this.context[channel],
-      ...this.props.config
+  componentDidMount () {
+    if (this.updateChannel) {
+      this.unsubscribe = this.updateChannel.subscribe(() => {
+        this.channel.setState(this.getConfig())
+      })
     }
+  }
+
+  componentWillReceiveProps ({config}) {
+    if (config !== this.props.config) {
+      this.channel.setState(this.getConfig(config))
+    }
+  }
+
+  componentWillUnmount () {
+    if (this.updateChannel) {
+      this.unsubscribe()
+    }
+  }
+
+  getConfig (config) {
+    const nextConfig = config || this.props.config
+
+    if (this.updateChannel) {
+      return {
+        ...this.updateChannel.getState(),
+        ...nextConfig
+      }
+    }
+
+    return nextConfig
   }
 
   render () {

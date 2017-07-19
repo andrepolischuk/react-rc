@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {object} from 'prop-types'
-import channel from './channel'
+import channelKey from './channel-key'
 
 function mapFullConfig (config) {
   return {
@@ -17,14 +17,28 @@ export default function withConfig (mapConfigToProps = mapFullConfig) {
     static displayName = `WithConfig(${getDisplayName(WrappedComponent)})`
 
     static contextTypes = {
-      [channel]: object
+      [channelKey]: object
+    }
+
+    get updateChannel () {
+      return this.context[channelKey]
+    }
+
+    componentDidMount () {
+      this.unsubscribe = this.updateChannel.subscribe(() => {
+        this.forceUpdate()
+      })
+    }
+
+    componentWillUnmount () {
+      this.unsubscribe()
     }
 
     render () {
       return (
         <WrappedComponent
           {...this.props}
-          {...mapConfigToProps(this.context[channel], this.props)} />
+          {...mapConfigToProps(this.updateChannel.getState(), this.props)} />
       )
     }
   }

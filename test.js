@@ -3,7 +3,7 @@ import React from 'react'
 import {mount} from 'enzyme'
 import {ConfigProvider, withConfig} from './src'
 
-const Demo = props => null
+const Demo = ({children = null}) => children
 
 test('single provider', t => {
   const Configured = withConfig((config, props) => ({
@@ -27,16 +27,46 @@ test('nested provider', t => {
 
   const wrapper = mount(
     <ConfigProvider config={{foo: 'Foo'}}>
-      <ConfigProvider config={{bar: 'Bar'}}>
+      <div>
+        <ConfigProvider config={{bar: 'Bar'}}>
+          <Configured />
+        </ConfigProvider>
         <Configured />
-      </ConfigProvider>
+      </div>
     </ConfigProvider>
   )
 
-  t.deepEqual(wrapper.find(Demo).props(), {
+  t.deepEqual(wrapper.find(Demo).at(0).props().config, {
+    foo: 'Foo',
+    bar: 'Bar'
+  })
+
+  t.deepEqual(wrapper.find(Demo).at(1).props().config, {foo: 'Foo'})
+})
+
+test('update config after mount', t => {
+  const Configured = withConfig(config => ({config}))(Demo)
+
+  const wrapper = mount(
+    <ConfigProvider config={{foo: 'Foo'}}>
+      <div>
+        <ConfigProvider config={{foo: 'Bar'}}>
+          <Configured />
+        </ConfigProvider>
+        <Configured />
+      </div>
+    </ConfigProvider>
+  )
+
+  t.deepEqual(wrapper.find(Demo).at(0).props().config, {foo: 'Bar'})
+  t.deepEqual(wrapper.find(Demo).at(1).props().config, {foo: 'Foo'})
+
+  wrapper.setProps({
     config: {
-      foo: 'Foo',
-      bar: 'Bar'
+      foo: 'Baz'
     }
   })
+
+  t.deepEqual(wrapper.find(Demo).at(0).props().config, {foo: 'Bar'})
+  t.deepEqual(wrapper.find(Demo).at(1).props().config, {foo: 'Baz'})
 })

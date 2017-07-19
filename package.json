@@ -36,6 +36,7 @@
   },
   "homepage": "https://github.com/andrepolischuk/react-rc#readme",
   "dependencies": {
+    "brcast": "^2.0.1",
     "prop-types": "^15.5.10",
     "random-string": "^0.2.0"
   },
