@@ -8,13 +8,24 @@ export default class ConfigProvider extends Component {
     children: element.isRequired
   }
 
+  static contextTypes = {
+    [channel]: object
+  }
+
   static childContextTypes = {
     [channel]: object
   }
 
   getChildContext () {
     return {
-      [channel]: this.props.config
+      [channel]: this.getConfig()
+    }
+  }
+
+  getConfig () {
+    return {
+      ...this.context[channel],
+      ...this.props.config
     }
   }
 

@@ -3,33 +3,40 @@ import React from 'react'
 import {mount} from 'enzyme'
 import {ConfigProvider, withConfig} from './src'
 
-const config = {
-  foo: 'Foo',
-  bar: 'Bar'
-}
+const Demo = props => null
 
-function Title ({title}) {
-  return (
-    <div>Hello, {title}</div>
-  )
-}
-
-test(t => {
-  const mapConfig = (config, props) => ({
+test('single provider', t => {
+  const Configured = withConfig((config, props) => ({
     title: config[props.id]
-  })
-
-  const TitleWithConfig = withConfig(mapConfig)(Title)
+  }))(Demo)
 
   const wrapper = mount(
-    <ConfigProvider config={config}>
-      <div>
-        <TitleWithConfig id='foo' />
-        <TitleWithConfig id='bar' />
-      </div>
+    <ConfigProvider config={{foo: 'Foo'}}>
+      <Configured id='foo' />
     </ConfigProvider>
   )
 
-  t.is(wrapper.childAt(0).text(), 'Hello, Foo')
-  t.is(wrapper.childAt(1).text(), 'Hello, Bar')
+  t.deepEqual(wrapper.find(Demo).props(), {
+    id: 'foo',
+    title: 'Foo'
+  })
+})
+
+test('nested provider', t => {
+  const Configured = withConfig(config => ({config}))(Demo)
+
+  const wrapper = mount(
+    <ConfigProvider config={{foo: 'Foo'}}>
+      <ConfigProvider config={{bar: 'Bar'}}>
+        <Configured />
+      </ConfigProvider>
+    </ConfigProvider>
+  )
+
+  t.deepEqual(wrapper.find(Demo).props(), {
+    config: {
+      foo: 'Foo',
+      bar: 'Bar'
+    }
+  })
 })
