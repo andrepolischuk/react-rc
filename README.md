@@ -2,6 +2,12 @@
 
 > React high-order component for configuration
 
+Some applications has a global or local configurations that rarely changed,
+and their usage depends on components props.
+
+These components allows you to have single entry point for configurations
+and select some their parts depending on props at any level of application.
+
 ## Install
 
 ```sh
