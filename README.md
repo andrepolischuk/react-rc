@@ -2,11 +2,9 @@
 
 > React high-order component for configuration
 
-Some applications has a global or local configurations that rarely changed,
-and their usage depends on components props.
-
+Some applications has a global or local configurations that rarely changed.
 These components allows you to have single entry point for configurations
-and select some their parts depending on props at any level of application.
+and select some their parts at any level of application.
 
 ## Install
 
@@ -22,15 +20,13 @@ In component:
 import React from 'react'
 import {withConfig} from 'react-rc'
 
-function Demo ({title}) {
+function Demo ({projectId, i18n}) {
   return (
-    <h1>{title}</h1>
+    <h1>{i18n[projectId]}</h1>
   )
 }
 
-export default withConfig((config, props) => ({
-  title: config[props.projectId]
-}))(Demo)
+export default withConfig(Demo)
 ```
 
 In app:
@@ -42,13 +38,15 @@ import {ConfigProvider} from 'react-rc'
 import Demo from './Demo'
 
 const config = {
-  foo: 'Foo',
-  bar: 'Bar'
+  i18n: {
+    foo: 'Foo',
+    bar: 'Bar'
+  }
 }
 
 render(
   <ConfigProvider config={config}>
-    <Demo projectId='foo' /> {/* {title: 'Foo'} */}
+    <Demo projectId='foo' />
   </ConfigProvider>,
   document.querySelector('#root')
 )
@@ -72,23 +70,13 @@ Type: `object`
 *Required*  
 Type: `element`
 
-### withConfig(mapConfigToProps)
+### withConfig(component)
 
 Create a high-order component to connect your component to context config.
 
-#### mapConfigToProps(config, props)
+#### component
 
-Type: `function`
-
-Function to merge config with props given to your component.
-
-##### config
-
-Type: `object`
-
-##### props
-
-Type: `object`
+Type: `element`
 
 ## License
 

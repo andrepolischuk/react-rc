@@ -6,12 +6,10 @@ import {ConfigProvider, withConfig} from './src'
 const Demo = ({children = null}) => children
 
 test('single provider', t => {
-  const Configured = withConfig((config, props) => ({
-    title: config[props.id]
-  }))(Demo)
+  const Configured = withConfig(Demo)
 
   const wrapper = mount(
-    <ConfigProvider config={{foo: 'Foo'}}>
+    <ConfigProvider config={{title: 'Foo'}}>
       <Configured id='foo' />
     </ConfigProvider>
   )
@@ -23,12 +21,12 @@ test('single provider', t => {
 })
 
 test('nested provider', t => {
-  const Configured = withConfig(config => ({config}))(Demo)
+  const Configured = withConfig(Demo)
 
   const wrapper = mount(
-    <ConfigProvider config={{foo: 'Foo'}}>
+    <ConfigProvider config={{title: 'Foo'}}>
       <div>
-        <ConfigProvider config={{bar: 'Bar'}}>
+        <ConfigProvider config={{subtitle: 'Bar'}}>
           <Configured />
         </ConfigProvider>
         <Configured />
@@ -36,21 +34,21 @@ test('nested provider', t => {
     </ConfigProvider>
   )
 
-  t.deepEqual(wrapper.find(Demo).at(0).props().config, {
-    foo: 'Foo',
-    bar: 'Bar'
+  t.deepEqual(wrapper.find(Demo).at(0).props(), {
+    title: 'Foo',
+    subtitle: 'Bar'
   })
 
-  t.deepEqual(wrapper.find(Demo).at(1).props().config, {foo: 'Foo'})
+  t.deepEqual(wrapper.find(Demo).at(1).props(), {title: 'Foo'})
 })
 
 test('update config after mount', t => {
-  const Configured = withConfig(config => ({config}))(Demo)
+  const Configured = withConfig(Demo)
 
   const wrapper = mount(
-    <ConfigProvider config={{foo: 'Foo'}}>
+    <ConfigProvider config={{title: 'Foo'}}>
       <div>
-        <ConfigProvider config={{foo: 'Bar'}}>
+        <ConfigProvider config={{title: 'Bar'}}>
           <Configured />
         </ConfigProvider>
         <Configured />
@@ -58,15 +56,15 @@ test('update config after mount', t => {
     </ConfigProvider>
   )
 
-  t.deepEqual(wrapper.find(Demo).at(0).props().config, {foo: 'Bar'})
-  t.deepEqual(wrapper.find(Demo).at(1).props().config, {foo: 'Foo'})
+  t.deepEqual(wrapper.find(Demo).at(0).props(), {title: 'Bar'})
+  t.deepEqual(wrapper.find(Demo).at(1).props(), {title: 'Foo'})
 
   wrapper.setProps({
     config: {
-      foo: 'Baz'
+      title: 'Baz'
     }
   })
 
-  t.deepEqual(wrapper.find(Demo).at(0).props().config, {foo: 'Bar'})
-  t.deepEqual(wrapper.find(Demo).at(1).props().config, {foo: 'Baz'})
+  t.deepEqual(wrapper.find(Demo).at(0).props(), {title: 'Bar'})
+  t.deepEqual(wrapper.find(Demo).at(1).props(), {title: 'Baz'})
 })

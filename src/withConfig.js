@@ -1,19 +1,13 @@
 import React, {Component} from 'react'
 import {object} from 'prop-types'
-import channelKey from './channel-key'
-
-function mapFullConfig (config) {
-  return {
-    config
-  }
-}
+import channelKey from './channelKey'
 
 function getDisplayName (WrappedComponent) {
   return WrappedComponent.displayName || WrappedComponent.name || 'Component'
 }
 
-export default function withConfig (mapConfigToProps = mapFullConfig) {
-  return WrappedComponent => class WithConfig extends Component {
+export default function withConfig (WrappedComponent) {
+  return class WithConfig extends Component {
     static displayName = `WithConfig(${getDisplayName(WrappedComponent)})`
 
     static contextTypes = {
@@ -38,7 +32,7 @@ export default function withConfig (mapConfigToProps = mapFullConfig) {
       return (
         <WrappedComponent
           {...this.props}
-          {...mapConfigToProps(this.updateChannel.getState(), this.props)} />
+          {...this.updateChannel.getState()} />
       )
     }
   }

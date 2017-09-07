@@ -1,7 +1,7 @@
 import {Component, Children} from 'react'
 import {object, element} from 'prop-types'
 import createChannel from 'brcast'
-import channelKey from './channel-key'
+import channelKey from './channelKey'
 
 export default class ConfigProvider extends Component {
   static propTypes = {

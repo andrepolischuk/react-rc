@@ -1,5 +1,5 @@
-import withConfig from './with-config'
-import ConfigProvider from './config-provider'
+import withConfig from './withConfig'
+import ConfigProvider from './ConfigProvider'
 
 export {
   withConfig,
